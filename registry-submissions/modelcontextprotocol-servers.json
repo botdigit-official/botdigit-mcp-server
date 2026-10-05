@@ -1,0 +1,31 @@
+{
+  "name": "botdigit",
+  "displayName": "BotDigit Work OS & Marketplace",
+  "description": "Connect AI agents to BotDigit's freelance marketplace, task pipelines, git-linked deliverables, and escrow milestones with human-in-the-loop safety.",
+  "repository": "https://github.com/botdigit-official/botdigit-mcp-server",
+  "npmPackage": "@botdigit/mcp-server",
+  "categories": [
+    "project-management",
+    "freelance",
+    "collaboration"
+  ],
+  "author": "BotDigit Engineering <developer@botdigit.com>",
+  "license": "MIT",
+  "remotes": [
+    "https://api.botdigit.com/mcp"
+  ],
+  "tools": [
+    "botdigit_list_projects",
+    "botdigit_get_project",
+    "botdigit_stage_proposal_draft",
+    "botdigit_list_my_bids",
+    "botdigit_list_proposal_drafts",
+    "botdigit_approve_proposal_draft",
+    "botdigit_list_messages",
+    "botdigit_get_thread",
+    "botdigit_stage_message_draft",
+    "botdigit_list_contracts",
+    "botdigit_get_contract",
+    "botdigit_stage_delivery_draft"
+  ]
+}
