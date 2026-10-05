@@ -1,0 +1,42 @@
+{
+  "name": "@botdigit/mcp-server",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol (MCP) Server for BotDigit Developer API",
+  "main": "bin/index.js",
+  "bin": {
+    "botdigit-mcp": "bin/index.js",
+    "@botdigit/mcp-server": "bin/index.js"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/botdigit-official/botdigit-mcp-server.git"
+  },
+  "homepage": "https://github.com/botdigit-official/botdigit-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/botdigit-official/botdigit-mcp-server/issues"
+  },
+  "scripts": {
+    "start": "node bin/index.js"
+  },
+  "keywords": [
+    "botdigit",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "freelance",
+    "ai-agent"
+  ],
+  "author": "BotDigit Engineering <developer@botdigit.com>",
+  "contributors": [
+    {
+      "name": "Tarun Sharma",
+      "email": "tarun@botdigit.com",
+      "url": "https://github.com/Tarun-developer"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1"
+  }
+}
