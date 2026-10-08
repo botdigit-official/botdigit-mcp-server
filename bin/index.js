@@ -90,6 +90,223 @@ async function callBotDigitApi(endpoint, options = {}) {
   });
 }
 
+// Published draft contracts (Developer Platform OpenAPI):
+// proposal body is string bid_amount, integer delivery_days, proposal_text,
+// and optional proposed_milestones; delivery body requires work_summary.
+// Legacy aliases are copied only when the conversion is exact.
+// Amounts are not rounded. Day counts are not inferred from prose.
+const DECIMAL_STRING = /^(0|[1-9]\d*)(\.\d+)?$/;
+const PROPOSAL_ARGUMENTS = new Set([
+  'project_id',
+  'bid_amount',
+  'delivery_days',
+  'estimated_duration',
+  'proposal_text',
+  'cover_letter',
+  'proposed_milestones',
+  'milestones',
+  'ai_agent_id',
+  'ai_agent_notes'
+]);
+const DELIVERY_ARGUMENTS = new Set([
+  'milestone_id',
+  'work_summary',
+  'notes',
+  'attachment_urls',
+  'ai_agent_id',
+  'ai_agent_notes'
+]);
+const MILESTONE_FIELDS = new Set(['title', 'description', 'amount', 'duration_days']);
+
+function assertPlainObject(value, field) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error(`${field} must be an object`);
+  }
+}
+
+function rejectUnknownArguments(params, allowed, toolName) {
+  for (const key of Object.keys(params)) {
+    if (!allowed.has(key)) {
+      throw new Error(`${toolName} does not accept argument ${key}`);
+    }
+  }
+}
+
+function requirePathSegment(value, field) {
+  if (typeof value !== 'string' || value.length === 0 || value === '.' || value === '..' || /[\/\\?#\s%]/.test(value)) {
+    throw new Error(`${field} must be a single non-empty path segment`);
+  }
+  return value;
+}
+
+function canonicalDecimalString(value, field) {
+  if (typeof value === 'string') {
+    if (!DECIMAL_STRING.test(value)) {
+      throw new Error(`${field} must be an exact non-negative decimal string`);
+    }
+    return value;
+  }
+  if (typeof value === 'number') {
+    if (Number.isSafeInteger(value) && value >= 0) return String(value);
+    throw new Error(`${field} must be an exact decimal string; non-integer numbers are rejected`);
+  }
+  throw new Error(`${field} must be an exact non-negative decimal string`);
+}
+
+function parseExactInteger(value, field, minimum) {
+  let parsed;
+  if (typeof value === 'number' && Number.isSafeInteger(value)) {
+    parsed = value;
+  } else if (typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value)) {
+    parsed = Number(value);
+    // Digit strings that do not round-trip through Number are not exact.
+    if (!Number.isSafeInteger(parsed) || String(parsed) !== value) {
+      throw new Error(`${field} must be an integer`);
+    }
+  } else {
+    throw new Error(`${field} must be an integer`);
+  }
+  if (parsed < minimum) {
+    throw new Error(`${field} must be >= ${minimum}`);
+  }
+  return parsed;
+}
+
+function exactText(value, field) {
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new Error(`${field} must be a non-empty string`);
+  }
+  return value;
+}
+
+function resolveAliasedText(primary, alias, primaryName, aliasName) {
+  const hasPrimary = primary !== undefined;
+  const hasAlias = alias !== undefined;
+  if (!hasPrimary && !hasAlias) {
+    throw new Error(`${primaryName} is required`);
+  }
+  if (hasPrimary && hasAlias && primary !== alias) {
+    throw new Error(`${primaryName} and ${aliasName} conflict`);
+  }
+  return exactText(hasPrimary ? primary : alias, primaryName);
+}
+
+function resolveDeliveryDays(params) {
+  const hasDays = params.delivery_days !== undefined;
+  const hasEstimate = params.estimated_duration !== undefined;
+  if (!hasDays && !hasEstimate) {
+    throw new Error('delivery_days is required');
+  }
+
+  let fromEstimate;
+  if (hasEstimate) {
+    const raw = params.estimated_duration;
+    if (typeof raw === 'number') {
+      fromEstimate = parseExactInteger(raw, 'estimated_duration', 1);
+    } else if (typeof raw === 'string') {
+      const text = raw.trim();
+      const match = text.match(/^(0|[1-9]\d*)$/) || text.match(/^(0|[1-9]\d*)\s*days?$/i);
+      if (!match) {
+        throw new Error('estimated_duration must be a whole number of days such as 7 or "7 days"');
+      }
+      fromEstimate = parseExactInteger(match[1], 'estimated_duration', 1);
+    } else {
+      throw new Error('estimated_duration must be a whole number of days such as 7 or "7 days"');
+    }
+  }
+
+  const fromDays = hasDays ? parseExactInteger(params.delivery_days, 'delivery_days', 1) : undefined;
+  if (hasDays && hasEstimate && fromDays !== fromEstimate) {
+    throw new Error('delivery_days and estimated_duration conflict');
+  }
+  return hasDays ? fromDays : fromEstimate;
+}
+
+function canonicalMilestones(params) {
+  const hasProposed = Object.prototype.hasOwnProperty.call(params, 'proposed_milestones');
+  const hasLegacy = Object.prototype.hasOwnProperty.call(params, 'milestones');
+  if (hasProposed && hasLegacy) {
+    throw new Error('proposed_milestones and milestones conflict');
+  }
+  if (!hasProposed && !hasLegacy) return undefined;
+
+  const source = hasProposed ? params.proposed_milestones : params.milestones;
+  if (!Array.isArray(source)) {
+    throw new Error('proposed_milestones must be an array');
+  }
+
+  return source.map((item, index) => {
+    const label = `proposed_milestones[${index}]`;
+    assertPlainObject(item, label);
+    for (const key of Object.keys(item)) {
+      if (!MILESTONE_FIELDS.has(key)) {
+        throw new Error(`${label} does not accept field ${key}`);
+      }
+    }
+    const milestone = {
+      title: exactText(item.title, `${label}.title`)
+    };
+    if (item.description !== undefined) {
+      if (typeof item.description !== 'string') {
+        throw new Error(`${label}.description must be a string`);
+      }
+      milestone.description = item.description;
+    }
+    milestone.amount = canonicalDecimalString(item.amount, `${label}.amount`);
+    if (item.duration_days !== undefined) {
+      milestone.duration_days = parseExactInteger(item.duration_days, `${label}.duration_days`, 0);
+    }
+    return milestone;
+  });
+}
+
+function optionalString(value, field) {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string') {
+    throw new Error(`${field} must be a string`);
+  }
+  return value;
+}
+
+function assignOptionalStrings(body, params) {
+  const agentId = optionalString(params.ai_agent_id, 'ai_agent_id');
+  const agentNotes = optionalString(params.ai_agent_notes, 'ai_agent_notes');
+  if (agentId !== undefined) body.ai_agent_id = agentId;
+  if (agentNotes !== undefined) body.ai_agent_notes = agentNotes;
+}
+
+function buildProposalDraft(params) {
+  assertPlainObject(params, 'arguments');
+  rejectUnknownArguments(params, PROPOSAL_ARGUMENTS, 'botdigit_stage_proposal_draft');
+  const projectId = requirePathSegment(params.project_id, 'project_id');
+  const body = {
+    bid_amount: canonicalDecimalString(params.bid_amount, 'bid_amount'),
+    delivery_days: resolveDeliveryDays(params),
+    proposal_text: resolveAliasedText(params.proposal_text, params.cover_letter, 'proposal_text', 'cover_letter')
+  };
+  const milestones = canonicalMilestones(params);
+  if (milestones !== undefined) body.proposed_milestones = milestones;
+  assignOptionalStrings(body, params);
+  return { projectId, body };
+}
+
+function buildDeliveryDraft(params) {
+  assertPlainObject(params, 'arguments');
+  rejectUnknownArguments(params, DELIVERY_ARGUMENTS, 'botdigit_stage_delivery_draft');
+  const milestoneId = requirePathSegment(params.milestone_id, 'milestone_id');
+  const body = {
+    work_summary: resolveAliasedText(params.work_summary, params.notes, 'work_summary', 'notes')
+  };
+  if (params.attachment_urls !== undefined) {
+    if (!Array.isArray(params.attachment_urls) || params.attachment_urls.some((item) => typeof item !== 'string')) {
+      throw new Error('attachment_urls must be an array of strings');
+    }
+    body.attachment_urls = params.attachment_urls.slice();
+  }
+  assignOptionalStrings(body, params);
+  return { milestoneId, body };
+}
+
 // Tool definitions
 const TOOLS = [
   {
@@ -118,28 +335,68 @@ const TOOLS = [
   },
   {
     name: 'botdigit_stage_proposal_draft',
-    description: 'Stage a proposal draft for a client project on BotDigit. Safe autonomous workflow: creates a draft in your dashboard for your review before live submission.',
+    description: 'Stage a proposal draft for human review. Does not approve or submit the proposal. Send the published draft fields: string bid_amount, integer delivery_days, and proposal_text.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         project_id: { type: 'string', description: 'The UUID of the target project' },
-        bid_amount: { type: 'number', description: 'Proposed bid amount in USD/project currency' },
-        estimated_duration: { type: 'string', description: 'Estimated delivery time (e.g. "7 Days", "2 Weeks")' },
-        cover_letter: { type: 'string', description: 'Detailed proposal cover letter explaining your solution' },
-        milestones: {
+        bid_amount: {
+          description: 'Exact bid as a decimal string such as "1500.00". A safe integer is accepted and sent as its exact decimal string. Non-integer numbers are rejected.',
+          anyOf: [
+            { type: 'string' },
+            { type: 'integer', minimum: 0 }
+          ]
+        },
+        delivery_days: { type: 'integer', minimum: 1, description: 'Whole delivery days, minimum 1.' },
+        proposal_text: { type: 'string', description: 'Proposal text sent as proposal_text.' },
+        proposed_milestones: {
           type: 'array',
-          description: 'Optional breakdown of milestones',
+          description: 'Optional milestones. Each amount is an exact decimal string.',
           items: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               title: { type: 'string' },
-              amount: { type: 'number' },
-              duration_days: { type: 'number' }
-            }
+              description: { type: 'string' },
+              amount: { type: 'string' },
+              duration_days: { type: 'integer', minimum: 0 }
+            },
+            required: ['title', 'amount']
+          }
+        },
+        ai_agent_id: { type: 'string', description: 'Optional agent identifier forwarded unchanged.' },
+        ai_agent_notes: { type: 'string', description: 'Optional agent notes forwarded unchanged.' },
+        estimated_duration: {
+          type: 'string',
+          description: 'Legacy alias for delivery_days. Accepted only as a whole day count such as "7" or "7 days". Prose such as "2 Weeks" is rejected. A different delivery_days conflicts.'
+        },
+        cover_letter: {
+          type: 'string',
+          description: 'Legacy alias for proposal_text. The exact string is copied. A different proposal_text conflicts.'
+        },
+        milestones: {
+          type: 'array',
+          description: 'Legacy alias for proposed_milestones. Rejected when proposed_milestones is also set. Integer amounts are sent as exact decimal strings.',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              title: { type: 'string' },
+              description: { type: 'string' },
+              amount: {
+                anyOf: [
+                  { type: 'string' },
+                  { type: 'integer', minimum: 0 }
+                ]
+              },
+              duration_days: { type: 'integer', minimum: 0 }
+            },
+            required: ['title', 'amount']
           }
         }
       },
-      required: ['project_id', 'bid_amount', 'estimated_duration', 'cover_letter']
+      required: ['project_id', 'bid_amount', 'delivery_days', 'proposal_text']
     }
   },
   {
@@ -240,19 +497,26 @@ const TOOLS = [
   },
   {
     name: 'botdigit_stage_delivery_draft',
-    description: 'Stage a milestone deliverable submission for client review and escrow release.',
+    description: 'Stage a milestone delivery draft for human review. Does not submit the milestone or release escrow. The published body field is work_summary.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         milestone_id: { type: 'string', description: 'UUID of the milestone' },
-        notes: { type: 'string', description: 'Description of deliverables and instructions for testing' },
+        work_summary: { type: 'string', description: 'Work summary sent as work_summary.' },
         attachment_urls: {
           type: 'array',
           items: { type: 'string' },
-          description: 'List of deliverable URLs, pull requests, or artifact links'
+          description: 'Deliverable URLs, pull requests, or artifact links'
+        },
+        ai_agent_id: { type: 'string', description: 'Optional agent identifier forwarded unchanged.' },
+        ai_agent_notes: { type: 'string', description: 'Optional agent notes forwarded unchanged.' },
+        notes: {
+          type: 'string',
+          description: 'Legacy alias for work_summary. The exact string is copied. A different work_summary conflicts.'
         }
       },
-      required: ['milestone_id', 'notes']
+      required: ['milestone_id', 'work_summary']
     }
   }
 ];
@@ -275,14 +539,10 @@ async function executeTool(name, params = {}) {
     }
 
     case 'botdigit_stage_proposal_draft': {
-      return await callBotDigitApi(`/api/developer/v1/projects/${params.project_id}/proposals/drafts`, {
+      const draft = buildProposalDraft(params);
+      return await callBotDigitApi(`/api/developer/v1/projects/${draft.projectId}/proposals/drafts`, {
         method: 'POST',
-        body: {
-          bid_amount: params.bid_amount,
-          estimated_duration: params.estimated_duration,
-          cover_letter: params.cover_letter,
-          milestones: params.milestones || []
-        }
+        body: draft.body
       });
     }
 
@@ -339,12 +599,10 @@ async function executeTool(name, params = {}) {
     }
 
     case 'botdigit_stage_delivery_draft': {
-      return await callBotDigitApi(`/api/developer/v1/contracts/milestones/${params.milestone_id}/delivery-drafts`, {
+      const draft = buildDeliveryDraft(params);
+      return await callBotDigitApi(`/api/developer/v1/contracts/milestones/${draft.milestoneId}/delivery-drafts`, {
         method: 'POST',
-        body: {
-          notes: params.notes,
-          attachment_urls: params.attachment_urls || []
-        }
+        body: draft.body
       });
     }
 

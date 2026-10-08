@@ -17,7 +17,8 @@
     "url": "https://github.com/botdigit-official/botdigit-mcp-server/issues"
   },
   "scripts": {
-    "start": "node bin/index.js"
+    "start": "node bin/index.js",
+    "test": "node --test"
   },
   "keywords": [
     "mcp",
