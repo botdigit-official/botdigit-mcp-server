@@ -39,5 +39,5 @@ When working on a BotDigit-connected workspace or freelance project, follow this
 ## 4. Milestone Deliverable Submission
 - When a milestone is ready for review:
   1. Verify all tests pass.
-  2. Call `botdigit_stage_delivery_draft` with `{ milestone_id, notes, attachment_urls: [pr_url] }`.
+  2. Call `botdigit_stage_delivery_draft` with `{ milestone_id, work_summary, attachment_urls: [pr_url] }`.
   3. The client will be notified to review the deliverable and release the funded escrow.

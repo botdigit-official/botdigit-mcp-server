@@ -1,0 +1,78 @@
+{
+  "provenance": {
+    "openapi_url": "https://botdigit.com/docs/api/openapi.json",
+    "retrieved_utc": "2026-10-08",
+    "openapi": "3.1.0",
+    "info_title": "BotDigit Developer Platform API",
+    "info_version": "1.0.0",
+    "servers": [
+      "https://api.botdigit.com/api/developer/v1",
+      "https://api-staging.botdigit.com/api/developer/v1"
+    ],
+    "upstream_repo": "botdigit-official/botdigit-mcp-server",
+    "upstream_mcp_commit": "7128d68c917c7d318f3d187a9734679e404c4fc8",
+    "path_count_observed": 28,
+    "note": "Excerpt of the two draft write schemas copied from the published OpenAPI document. This is not a live provider transcript."
+  },
+  "api_prefix": "/api/developer/v1",
+  "proposal_draft": {
+    "method": "post",
+    "openapi_path": "/projects/{project_id}/proposals/drafts",
+    "summary": "Stage Proposal Draft (AI Agent)",
+    "schema": {
+      "type": "object",
+      "required": ["bid_amount", "delivery_days", "proposal_text"],
+      "properties": {
+        "bid_amount": {
+          "type": "string",
+          "description": "Proposed bid amount in decimal format, e.g. '1500.00'"
+        },
+        "delivery_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "proposal_text": {
+          "type": "string"
+        },
+        "proposed_milestones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["title", "amount"],
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "amount": { "type": "string" },
+              "duration_days": { "type": "integer" }
+            }
+          }
+        },
+        "ai_agent_id": {
+          "type": "string",
+          "description": "Identifier of the agent or model proposing this draft"
+        },
+        "ai_agent_notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "delivery_draft": {
+    "method": "post",
+    "openapi_path": "/contracts/milestones/{milestone_id}/delivery-drafts",
+    "summary": "Stage Milestone Delivery Draft",
+    "schema": {
+      "type": "object",
+      "required": ["work_summary"],
+      "properties": {
+        "work_summary": { "type": "string" },
+        "attachment_urls": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "ai_agent_id": { "type": "string" },
+        "ai_agent_notes": { "type": "string" }
+      }
+    }
+  }
+}
