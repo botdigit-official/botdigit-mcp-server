@@ -1,0 +1,20 @@
+{
+  "name": "botdigit",
+  "version": "1.0.0",
+  "description": "Official BotDigit plugin for Claude Code and Cowork. Discover freelance projects, stage proposal drafts with human approval, and track contract milestones.",
+  "author": {
+    "name": "BotDigit Inc.",
+    "url": "https://botdigit.com"
+  },
+  "homepage": "https://botdigit.com/mcp",
+  "repository": "https://github.com/botdigit-official/botdigit-mcp-server",
+  "license": "MIT",
+  "keywords": [
+    "botdigit",
+    "freelance",
+    "mcp",
+    "claude-code",
+    "cowork",
+    "project-management"
+  ]
+}

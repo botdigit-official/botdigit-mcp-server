@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "botdigit": {
+      "command": "npx",
+      "args": ["-y", "@botdigit/mcp-server"],
+      "env": {
+        "BOTDIGIT_API_TOKEN": "${BOTDIGIT_API_TOKEN}",
+        "BOTDIGIT_API_URL": "https://api.botdigit.com/api/mcp"
+      }
+    }
+  }
+}

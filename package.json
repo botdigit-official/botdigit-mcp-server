@@ -1,53 +1,33 @@
 {
   "name": "@botdigit/mcp-server",
-  "version": "1.0.1",
-  "description": "Official Model Context Protocol (MCP) server for BotDigit — connect Claude, Cursor, AI agents and AI assistants to freelance talent, projects, tasks, contracts and project delivery workflows.",
-  "main": "bin/index.js",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol (MCP) Server for BotDigit Work OS — connect Cursor, Claude Desktop, and AI agents to projects, milestones, tasks, and Git delivery.",
   "bin": {
-    "botdigit-mcp": "bin/index.js",
-    "mcp-server": "bin/index.js"
+    "botdigit-mcp": "./bin/botdigit-mcp.js"
   },
-  "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/botdigit-official/botdigit-mcp-server.git"
-  },
-  "homepage": "https://botdigit.com/mcp",
-  "bugs": {
-    "url": "https://github.com/botdigit-official/botdigit-mcp-server/issues"
-  },
+  "main": "./bin/botdigit-mcp.js",
   "scripts": {
-    "start": "node bin/index.js"
+    "start": "node ./bin/botdigit-mcp.js",
+    "test": "node ./bin/botdigit-mcp.js --test-connection"
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "mcp-server",
-    "ai-agents",
-    "ai-agent",
-    "ai-tools",
-    "ai-coding",
-    "ai-assistant",
-    "claude",
+    "botdigit",
+    "ai",
     "cursor",
+    "claude-desktop",
     "developer-tools",
     "freelance",
-    "freelance-marketplace",
-    "project-management",
-    "talent-marketplace",
-    "workflow-automation",
-    "botdigit"
+    "work-os"
   ],
-  "author": "BotDigit Engineering <developer@botdigit.com>",
-  "contributors": [
-    {
-      "name": "Tarun Sharma",
-      "email": "tarun@botdigit.com",
-      "url": "https://github.com/Tarun-developer"
-    }
-  ],
+  "author": "BotDigit Inc.",
   "license": "MIT",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/botdigit-official/botdigit-mcp-server.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
