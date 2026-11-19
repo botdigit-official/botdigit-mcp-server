@@ -15,7 +15,7 @@
     "https://api.botdigit.com/mcp"
   ],
   "tools": [
-    "botdigit_list_projects",
+    "botdigit_search_projects",
     "botdigit_get_project",
     "botdigit_stage_proposal_draft",
     "botdigit_list_my_bids",
@@ -26,6 +26,6 @@
     "botdigit_stage_message_draft",
     "botdigit_list_contracts",
     "botdigit_get_contract",
-    "botdigit_stage_delivery_draft"
+    "botdigit_submit_deliverable"
   ]
 }
