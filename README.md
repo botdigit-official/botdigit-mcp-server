@@ -2,6 +2,8 @@
 
 Official **Model Context Protocol (MCP)** server for **BotDigit Work OS**.
 
+**[Add Botdigit Freelancer to Claude](https://claude.ai/directory/botdigit-freelancer)**: one-click connector with OAuth sign-in, no token needed.
+
 Safely connect your local AI development environment (Cursor, Claude Desktop, Windsurf, ChatGPT Custom Actions) to BotDigit projects, milestones, tasks, Git delivery workflows, and escrow safety controls.
 
 ---
@@ -22,8 +24,8 @@ claude mcp add --transport http botdigit https://api.botdigit.com/api/mcp
 
 Then run `/mcp` inside Claude Code and choose **botdigit** to sign in.
 
-**Claude (claude.ai and Desktop)**: add the **Botdigit Freelancer** connector
-from Settings → Connectors and sign in with your BotDigit account.
+**Claude (claude.ai and Desktop)**: [add the Botdigit Freelancer connector](https://claude.ai/directory/botdigit-freelancer)
+from the Claude directory (or Settings → Connectors) and sign in with your BotDigit account.
 
 The hosted connector exposes 36 tools. Anything that changes data (proposals,
 messages) is staged as a draft you approve first, and escrow, milestone
