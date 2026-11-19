@@ -14,7 +14,7 @@ Inspect client project specifications and prepare a tailored proposal draft for 
 4. Call `botdigit_stage_proposal_draft` with:
    - `project_id`: Target project ID
    - `bid_amount`: Proposed amount
-   - `estimated_days`: Estimated duration
-   - `cover_letter`: Structured technical proposal
+   - `delivery_days`: Estimated duration in days
+   - `proposal_text`: Structured technical proposal
 5. Present the staged draft ID and direct link to the user:
    *"Draft #<id> staged. Please review and approve at https://botdigit.com/dashboard/proposals"*

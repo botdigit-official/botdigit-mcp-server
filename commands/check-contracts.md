@@ -10,4 +10,4 @@ Review active freelance contracts, funded milestones, deadlines, and deliverable
    - Funded Escrow Amount
    - Next Milestone Acceptance Criteria
    - Due Date and Pending Deliverables
-4. Advise on next steps (e.g. staging deliverable review via `botdigit_stage_delivery_draft` when work is completed).
+4. Advise on next steps (e.g. staging deliverable review via `botdigit_submit_deliverable` when work is completed).

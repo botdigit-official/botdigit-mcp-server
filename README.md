@@ -90,27 +90,21 @@ export BOTDIGIT_API_TOKEN="bdt_pat_your_token_here"
 
 ---
 
-## The 17 Native MCP Tools
+## The 36 MCP Tools
 
-| Phase | Tool Name | Description |
-|---|---|---|
-| **Phase 1: Discovery** | `search_projects` | Search open marketplace projects, RFPs, and freelance gigs |
-| | `get_project` | Complete project specifications, milestones, and funding status |
-| | `get_workspace` | Workspace collaboration state, members, roles, active tasks |
-| | `get_milestones` | Milestones, acceptance criteria, deadlines, escrow status |
-| | `get_project_status` | One-shot executive rollup (% complete, tasks, escrow) |
-| **Phase 2: Management** | `search_freelancers` | Search verified talent with skills, rating, completed projects |
-| | `get_freelancer` | Verified profile, hourly rates, portfolio, GitHub verification |
-| | `create_project` | Create new client project draft with milestone structure |
-| | `create_task` | Create Kanban tasks on project board with priority & assignees |
-| | `update_task` | Update task status (`todo`, `in_progress`, `done`) and notes |
-| **Phase 3: Delivery** | `get_git_activity` | Query linked Git commits, pull requests, issues, repo status |
-| | `link_commit_to_milestone` | Associate a commit SHA or PR to milestone evidence |
-| | `submit_deliverable` | Stage deliverable with work summary, URLs, and AI notes |
-| | `get_deliverables` | List staged deliverables, review status, and freelancer info |
-| | `verify_milestone_completion` | 4-point verification readiness check (tasks, Git, artifacts) |
-| **Phase 4: Financial Safety** | `prepare_milestone_payment` | Stage payment with cryptographic token & 1-click client approval |
-| | `get_payment_approval_status` | Check if client authorized or executed milestone payment |
+Read the live list any time with `npx @botdigit/mcp-server --test-connection`.
+
+| Group | Tools |
+|---|---|
+| **Discover** | `search_projects`, `get_project`, `get_workspace`, `search_freelancers`, `get_freelancer` |
+| **Manage work** | `create_project`, `create_task`, `update_task`, `get_milestones`, `get_project_status`, `update_milestone`, `update_project_status` |
+| **Deliver** | `get_git_activity`, `link_commit_to_milestone`, `submit_deliverable`, `get_deliverables`, `verify_milestone_completion` |
+| **Visual review** | `list_review_projects`, `get_review_context`, `list_feedback_items`, `get_feedback_item`, `get_version_diff`, `create_fix_plan`, `update_review_task`, `attach_implementation_evidence`, `request_visual_verification`, `update_review_status` |
+| **Proposals** | `stage_proposal_draft`, `list_proposal_drafts`, `approve_proposal_draft`, `list_my_bids` |
+| **Messages and contracts** | `list_messages`, `get_thread`, `stage_message_draft`, `list_contracts`, `get_contract` |
+
+Tools that change data follow Prepare, Confirm, Execute: they stage a draft that
+you review and approve.
 
 ---
 
@@ -118,7 +112,8 @@ export BOTDIGIT_API_TOKEN="bdt_pat_your_token_here"
 
 > **"AI prepares, BotDigit verifies, Humans authorize."**
 
-Autonomous AI agents cannot execute payment transfers or escrow releases autonomously. The `prepare_milestone_payment` tool generates a cryptographic approval token and a **1-click web approval link** (`https://botdigit.com/approvals/payment/:token`) for the verified client to review and authorize.
+Agents cannot move money. Escrow funding, milestone approval, payment release and
+project completion are done by people in the BotDigit dashboard, never by a tool call.
 
 ---
 
