@@ -8,6 +8,32 @@ Safely connect your local AI development environment (Cursor, Claude Desktop, Wi
 
 ## Quickstart
 
+### Hosted connector for Claude (no token needed)
+
+If you only use Claude, you can skip the npm package and connect to the hosted
+BotDigit MCP server with OAuth sign-in. No personal access token is stored on
+your machine.
+
+**Claude Code**
+
+```bash
+claude mcp add --transport http botdigit https://api.botdigit.com/api/mcp
+```
+
+Then run `/mcp` inside Claude Code and choose **botdigit** to sign in.
+
+**Claude (claude.ai and Desktop)**: add the **Botdigit Freelancer** connector
+from Settings → Connectors and sign in with your BotDigit account.
+
+The hosted connector exposes 36 tools. Anything that changes data (proposals,
+messages) is staged as a draft you approve first, and escrow, milestone
+approval and payment release stay with people. Payment-preparation tools are
+not available to OAuth connector clients. Full guide:
+https://botdigit.com/mcp/claude-connector
+
+The sections below cover the token-based npm package for Cursor, Claude
+Desktop (stdio), Windsurf and the Claude Code plugin.
+
 ### 1. Cursor IDE Configuration
 
 Add the following to your `~/.cursor/mcp.json`:
@@ -20,7 +46,7 @@ Add the following to your `~/.cursor/mcp.json`:
       "args": ["-y", "@botdigit/mcp-server"],
       "env": {
         "BOTDIGIT_PAT": "bdt_pat_your_token_here",
-        "BOTDIGIT_API_URL": "https://api.botdigit.com/api/v1/mcp"
+        "BOTDIGIT_API_URL": "https://api.botdigit.com/api/mcp"
       }
     }
   }
