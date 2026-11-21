@@ -295,6 +295,16 @@ Terms, funded escrow breakdown, client and freelancer details and dispute status
 
 ---
 
+## Tools that ask for approval
+
+Some AI clients ask you to approve each call to these tools before they run:
+
+- `update_review_task`: changes a pin's status and priority.
+- `update_task`: changes a task's status, priority and notes.
+
+If your client asks, check the arguments in the prompt, then approve or decline.
+You can set this per tool in your client's permission settings.
+
 ## Tools that are not exposed to OAuth connector clients
 
 The README for the npm package says payment-preparation tools are not available
