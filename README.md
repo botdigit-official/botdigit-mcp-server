@@ -6,6 +6,8 @@ Official **Model Context Protocol (MCP)** server for **BotDigit Work OS**.
 
 Safely connect your local AI development environment (Cursor, Claude Desktop, Windsurf, ChatGPT Custom Actions) to BotDigit projects, milestones, tasks, Git delivery workflows, and escrow safety controls.
 
+Full documentation for the connector, the review site and the browser extension is in [docs/](docs/README.md).
+
 ---
 
 ## Quickstart
