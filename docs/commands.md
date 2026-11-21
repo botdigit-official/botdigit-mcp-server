@@ -1,5 +1,22 @@
 # Commands, CLI and settings
 
+## All MCP tools at a glance
+
+These are the 36 MCP tools (the server's commands). Arguments and examples are in
+[tools.md](tools.md).
+
+| Group | Tools |
+|---|---|
+| Discover | `search_projects`, `get_project`, `get_workspace`, `search_freelancers`, `get_freelancer` |
+| Manage work | `create_project`, `create_task`, `update_task`, `get_milestones`, `get_project_status`, `update_milestone`, `update_project_status` |
+| Deliver | `get_git_activity`, `link_commit_to_milestone`, `submit_deliverable`, `get_deliverables`, `verify_milestone_completion` |
+| Visual review | `list_review_projects`, `get_review_context`, `list_feedback_items`, `get_feedback_item`, `get_version_diff`, `create_fix_plan`, `update_review_task`, `attach_implementation_evidence`, `request_visual_verification`, `update_review_status` |
+| Proposals | `stage_proposal_draft`, `list_proposal_drafts`, `approve_proposal_draft`, `list_my_bids` |
+| Messages and contracts | `list_messages`, `get_thread`, `stage_message_draft`, `list_contracts`, `get_contract` |
+
+Tool names in this list have no prefix. Use these names when you call tools
+directly or write prompts that name a tool.
+
 ## Slash commands (Claude Code plugin)
 
 These three commands are defined in `commands/` in this repository.
