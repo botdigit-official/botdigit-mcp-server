@@ -37,7 +37,7 @@ Example:
 
 The command files use the names `botdigit_search_projects`, `botdigit_get_project`
 and so on. The server's live tool names have no prefix (`search_projects`). If a
-command fails to find a tool, use the live name; the behaviour is the same.
+command fails to find a tool, use the live name.
 
 ## Skill
 

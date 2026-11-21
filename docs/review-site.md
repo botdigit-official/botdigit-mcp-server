@@ -21,7 +21,7 @@ Open the review link, or go to `review.botdigit.com/r/<share code>`. The first t
 you join as a guest: enter a name and, optionally, an email. The page then loads the
 reviewed site in the canvas.
 
-Signed-in members open the same link and are recognised automatically. See
+If you are signed in to BotDigit, the page recognises you as a member. See
 [auth.md](auth.md).
 
 ## The canvas
